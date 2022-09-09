@@ -4,6 +4,7 @@ import joi from "joi";
 import { getRegisters, RegisterNew } from "./Controllers/registerController.js";
 import { db } from "./db.js";
 import bcrypt from "bcrypt";
+import { v4 as uuid } from "uuid";
 
 const app = express();
 
@@ -65,6 +66,11 @@ app.post("/sign-in", async (req, res) => {
 
     let equalPassoword = bcrypt.compareSync(password, user.password);
     if (user && equalPassoword) {
+      const token = uuid();
+
+      await db.collection("sessions").insertOne({ token, userId: user._id });
+
+      res.status(201).send(token);
     } else {
       return res.status(401).send("email ou senha inválidos");
     }

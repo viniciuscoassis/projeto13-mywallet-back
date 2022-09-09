@@ -9,11 +9,27 @@ const newEntranceSchema = joi.object({
 });
 
 async function getRegisters(req, res) {
+  const { authorization } = req.headers;
+  const token = authorization?.replace("Bearer ", "");
+  if (!token) return res.sendStatus(401);
+
+  const session = await db.collection("sessions").findOne({ token });
+
+  if (!session) return res.sendStatus(401);
+
   const registros = await db.collection("registers").find({}).toArray();
   res.send(registros);
 }
 
 async function RegisterNew(req, res) {
+  const { authorization } = req.headers;
+  const token = authorization.replace("Bearer ", "");
+  if (!token) return res.sendStatus(401);
+
+  const session = await db.collection("sessions").findOne({ token });
+
+  if (!session) return res.sendStatus(401);
+
   let { value, description, type } = req.body;
   value = Number(value);
   const validation = newEntranceSchema.validate(
