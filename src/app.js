@@ -1,19 +1,14 @@
 import express from "express";
 import cors from "cors";
-import { getRegisters, RegisterNew } from "./Controllers/registerController.js";
-import { signIn, signUp } from "./Controllers/authController.js";
+import authRouter from "./Routes/authRouter.js";
+import registerRoute from "./Routes/registerRouter.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.post("/sign-up", signUp);
-
-app.post("/sign-in", signIn);
-
-app.get("/registers", getRegisters);
-
-app.post("/registers", RegisterNew);
+app.use(authRouter);
+app.use(registerRoute);
 
 app.listen(5000, () => console.log("magic on 5000"));
