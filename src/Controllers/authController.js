@@ -30,6 +30,11 @@ async function signUp(req, res) {
     res.status(400).send(error.details.map((value) => value.message));
   }
 
+  const repetido = await db
+    .collection("users")
+    .findOne({ email: newUser.email });
+  if (repetido) return res.status(409).send("Email já cadastrado");
+
   try {
     await db.collection("users").insertOne({
       ...newUser,
@@ -62,7 +67,9 @@ async function signIn(req, res) {
 
       await db.collection("sessions").insertOne({ token, userId: user._id });
 
-      res.status(201).send(token);
+      delete user.password;
+      delete user._id;
+      res.status(201).send({ token, user });
     } else {
       return res.status(401).send("email ou senha inválidos");
     }

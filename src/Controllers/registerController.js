@@ -17,13 +17,16 @@ async function getRegisters(req, res) {
 
   if (!session) return res.sendStatus(401);
 
-  const registros = await db.collection("registers").find({}).toArray();
+  const registros = await db
+    .collection("registers")
+    .find({ userId: session.userId })
+    .toArray();
   res.send(registros);
 }
 
 async function RegisterNew(req, res) {
   const { authorization } = req.headers;
-  const token = authorization.replace("Bearer ", "");
+  const token = authorization?.replace("Bearer ", "");
   if (!token) return res.sendStatus(401);
 
   const session = await db.collection("sessions").findOne({ token });
@@ -43,9 +46,13 @@ async function RegisterNew(req, res) {
       .send(validation.error.details.map((value) => value.message));
   }
 
-  await db
-    .collection("registers")
-    .insertOne({ value, description, type, date: dayjs().format("DD/MM") });
+  await db.collection("registers").insertOne({
+    value,
+    description,
+    type,
+    date: dayjs().format("DD/MM"),
+    userId: session.userId,
+  });
   return res.sendStatus(201);
 }
 
