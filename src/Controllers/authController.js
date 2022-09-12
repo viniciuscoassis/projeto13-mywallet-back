@@ -8,42 +8,19 @@ const userSchema = joi.object({
   password: joi.required(),
 });
 
-const newUserSchema = joi.object({
-  name: joi.string().required(),
-  email: joi
-    .string()
-    .email({
-      minDomainSegments: 2,
-      tlds: { allow: ["com", "net"] },
-    })
-    .required(),
-  password: joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required(),
-});
-
 async function signUp(req, res) {
   const newUser = req.body;
-
-  const { error, value } = newUserSchema.validate(newUser, {
-    abortEarly: false,
-  });
-  if (error) {
-    res.status(400).send(error.details.map((value) => value.message));
-  }
-
-  const repetido = await db
-    .collection("users")
-    .findOne({ email: newUser.email });
-  if (repetido) return res.status(409).send("Email já cadastrado");
-
   try {
     await db.collection("users").insertOne({
       ...newUser,
       password: bcrypt.hashSync(newUser.password, 10),
     });
 
-    res.sendStatus(201);
+    return res.sendStatus(201);
   } catch (error) {
     res.status(500).send(error);
+    console.log(error);
+    return;
   }
 }
 

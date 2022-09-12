@@ -42,7 +42,7 @@ async function RegisterNew(req, res) {
 
   if (validation.error) {
     return res
-      .status(400)
+      .status(422)
       .send(validation.error.details.map((value) => value.message));
   }
 
