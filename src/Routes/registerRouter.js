@@ -6,10 +6,10 @@ import {
 import auth from "../Midlewares/auth.js";
 import { validadeNewEntrance } from "../Midlewares/validateNewEntrance.js";
 
-const registerRoute = express.Router();
+const registerRouter = express.Router();
 
-registerRoute.use(auth);
-registerRoute.get("/registers", getRegisters);
-registerRoute.post("/registers", validadeNewEntrance, RegisterNew);
+registerRouter.use(auth);
+registerRouter.get("/registers", getRegisters);
+registerRouter.post("/registers", validadeNewEntrance, RegisterNew);
 
-export default registerRoute;
+export default registerRouter;
