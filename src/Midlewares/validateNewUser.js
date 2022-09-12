@@ -16,13 +16,6 @@ const newUserSchema = joi.object({
 async function validateNewUser(req, res, next) {
   const newUser = req.body;
 
-  const { error, value } = newUserSchema.validate(newUser, {
-    abortEarly: false,
-  });
-  if (error) {
-    return res.status(422).send(error.details.map((value) => value.message));
-  }
-
   const repetido = await db
     .collection("users")
     .findOne({ email: newUser.email });

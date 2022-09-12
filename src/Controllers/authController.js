@@ -1,12 +1,6 @@
 import { db } from "../db.js";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
-import joi from "joi";
-
-const userSchema = joi.object({
-  email: joi.required(),
-  password: joi.required(),
-});
 
 async function signUp(req, res) {
   const newUser = req.body;
@@ -27,14 +21,6 @@ async function signUp(req, res) {
 async function signIn(req, res) {
   const { email, password } = req.body;
 
-  const { error, value } = userSchema.validate(
-    { email, password },
-    { abortEarly: false }
-  );
-
-  if (error) {
-    res.status(422).send(error.details.map((value) => value.message));
-  }
   try {
     const user = await db.collection("users").findOne({ email });
 
