@@ -4,6 +4,8 @@ import { v4 as uuid } from "uuid";
 
 async function signUp(req, res) {
   const newUser = req.body;
+
+  delete newUser.confirmPassword;
   try {
     await db.collection("users").insertOne({
       ...newUser,

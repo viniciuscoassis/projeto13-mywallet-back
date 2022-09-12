@@ -11,10 +11,18 @@ const newUserSchema = joi.object({
     })
     .required(),
   password: joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required(),
+  confirmPassword: joi.any().valid(joi.ref("password")).required(),
 });
 
 async function validateNewUser(req, res, next) {
   const newUser = req.body;
+
+  const { error, value } = newUserSchema.validate(newUser, {
+    abortEarly: false,
+  });
+  if (error) {
+    return res.status(422).send(error.details.map((value) => value.message));
+  }
 
   const repetido = await db
     .collection("users")
